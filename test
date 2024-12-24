@@ -1,0 +1,28 @@
+# import utils.surd as surd
+# import utils.analytic_eqs as cases
+# import matplotlib.colors as mcolors  # type: ignore
+# import matplotlib.pyplot as plt  # type: ignore
+# import numpy as np  # type: ignore
+import pyinform
+import os
+import sys
+from utils import analytic_eqs
+import numpy as np
+sys.path.append(os.path.abspath('../utils'))
+Nt = 5*10**7            # Number of time steps to perform the integration of the system
+# Number of samples to be considered (remove the transients)
+samples = Nt-10000
+nbins = 50              # Number of bins to disctrize the histogram
+nlag = 1                # Time lag to perform the causal analysis
+formatted_Nt = "{:.0e}".format(Nt).replace("+0", "").replace("+", "")
+filepath = os.path.join('../data', f"synergistic_Nt_{formatted_Nt}.npy")
+print(filepath)
+# Check if data is saved and load it, otherwise generate and save
+if os.path.isfile(filepath):
+    X = np.load(filepath)
+    print(f"Loaded data for synergistic")
+else:
+    qs = analytic_eqs.synergistic_collider(Nt)
+    X = np.array([q[-samples:] for q in qs])
+    np.save(filepath, X)
+    print(f"Generated and saved data for synergistic")
